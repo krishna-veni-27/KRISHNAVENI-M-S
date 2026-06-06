@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sentiment Analysis AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+    radial-gradient(circle at top left,#5b21b6,#111827),
+    radial-gradient(circle at bottom right,#06b6d4,#111827);
+    overflow:hidden;
+}
+
+body::before{
+    content:'';
+    position:absolute;
+    width:350px;
+    height:350px;
+    background:#7c3aed;
+    border-radius:50%;
+    filter:blur(120px);
+    top:-100px;
+    left:-100px;
+}
+
+body::after{
+    content:'';
+    position:absolute;
+    width:350px;
+    height:350px;
+    background:#06b6d4;
+    border-radius:50%;
+    filter:blur(120px);
+    bottom:-100px;
+    right:-100px;
+}
+
+.container{
+    position:relative;
+    width:650px;
+    padding:40px;
+    border-radius:30px;
+    backdrop-filter:blur(20px);
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.35);
+}
+
+.logo{
+    font-size:45px;
+    text-align:center;
+}
+
+h1{
+    text-align:center;
+    color:white;
+    margin-top:10px;
+    font-weight:600;
+}
+
+.subtitle{
+    text-align:center;
+    color:#cbd5e1;
+    margin-top:8px;
+    margin-bottom:30px;
+}
+
+textarea{
+    width:100%;
+    height:160px;
+    resize:none;
+    border:none;
+    outline:none;
+    border-radius:18px;
+    padding:20px;
+    font-size:16px;
+    background:rgba(255,255,255,0.08);
+    color:white;
+    border:1px solid rgba(255,255,255,0.12);
+}
+
+textarea::placeholder{
+    color:#cbd5e1;
+}
+
+button{
+    width:100%;
+    margin-top:20px;
+    padding:15px;
+    border:none;
+    border-radius:15px;
+    font-size:17px;
+    font-weight:600;
+    color:white;
+    cursor:pointer;
+
+    background:linear-gradient(
+        135deg,
+        #8b5cf6,
+        #06b6d4
+    );
+
+    transition:0.3s;
+}
+
+button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 25px rgba(6,182,212,.4);
+}
+
+.result-card{
+    margin-top:25px;
+    padding:20px;
+    border-radius:18px;
+    background:rgba(255,255,255,0.08);
+    text-align:center;
+    color:white;
+}
+
+.sentiment{
+    font-size:26px;
+    font-weight:600;
+    margin-top:10px;
+}
+
+.footer{
+    text-align:center;
+    margin-top:25px;
+    color:#94a3b8;
+    font-size:13px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">🧠</div>
+
+    <h1>AI Sentiment Analyzer</h1>
+
+    <p class="subtitle">
+        Analyze emotions and sentiment from text instantly
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <textarea
+            name="text"
+            placeholder="Type a review, message, tweet, or any sentence..."></textarea>
+
+        <button type="submit">
+            Analyze Sentiment
+        </button>
+
+    </form>
+
+    {% if sentiment %}
+    <div class="result-card">
+
+        <h3>Analysis Result</h3>
+
+        <div class="sentiment">
+            {{ sentiment }}
+        </div>
+
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        Powered by Django & NLP
+    </div>
+
+</div>
+
+</body>
+</html>
+  
