@@ -1,19 +1,16 @@
 from django.shortcuts import render
-from textblob import TextBlob
 
 def home(request):
     sentiment = None
+    text = ""
 
     if request.method == "POST":
         text = request.POST.get("text")
 
-        polarity = TextBlob(text).sentiment.polarity
+        # Your sentiment analysis code here
+        sentiment = "Positive"  # Example
 
-        if polarity > 0:
-            sentiment = "Positive 😊"
-        elif polarity < 0:
-            sentiment = "Negative 😞"
-        else:
-            sentiment = "Neutral 😐"
-
-    return render(request, "index.html", {"sentiment": sentiment})
+    return render(request, "index.html", {
+        "sentiment": sentiment,
+        "text": text
+    })

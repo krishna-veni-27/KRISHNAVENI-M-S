@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sentiment Analysis AI</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Sentiment Analysis Web App</title>
 
 <style>
 
@@ -14,7 +12,7 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+    font-family:Arial, sans-serif;
 }
 
 body{
@@ -22,10 +20,12 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
+    overflow:hidden;
+    position:relative;
+
     background:
     radial-gradient(circle at top left,#5b21b6,#111827),
     radial-gradient(circle at bottom right,#06b6d4,#111827);
-    overflow:hidden;
 }
 
 body::before{
@@ -60,32 +60,51 @@ body::after{
     backdrop-filter:blur(20px);
     background:rgba(255,255,255,0.08);
     border:1px solid rgba(255,255,255,0.15);
-    box-shadow:
-        0 8px 32px rgba(0,0,0,0.35);
+    box-shadow:0 8px 32px rgba(0,0,0,0.35);
+    z-index:10;
 }
 
 .logo{
-    font-size:45px;
+    font-size:55px;
     text-align:center;
+    animation:float 3s ease-in-out infinite;
+}
+
+@keyframes float{
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-8px);
+    }
 }
 
 h1{
     text-align:center;
-    color:white;
     margin-top:10px;
-    font-weight:600;
+    font-weight:700;
+
+    background:linear-gradient(
+        90deg,
+        #8b5cf6,
+        #06b6d4
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
 
 .subtitle{
     text-align:center;
     color:#cbd5e1;
-    margin-top:8px;
-    margin-bottom:30px;
+    margin-top:10px;
+    margin-bottom:25px;
 }
 
 textarea{
     width:100%;
-    height:160px;
+    height:170px;
     resize:none;
     border:none;
     outline:none;
@@ -99,6 +118,13 @@ textarea{
 
 textarea::placeholder{
     color:#cbd5e1;
+}
+
+.counter{
+    text-align:right;
+    color:#cbd5e1;
+    margin-top:8px;
+    font-size:13px;
 }
 
 button{
@@ -126,6 +152,23 @@ button:hover{
     box-shadow:0 10px 25px rgba(6,182,212,.4);
 }
 
+.loader{
+    display:none;
+    margin:20px auto;
+    width:40px;
+    height:40px;
+    border:4px solid rgba(255,255,255,.3);
+    border-top:4px solid white;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
 .result-card{
     margin-top:25px;
     padding:20px;
@@ -133,19 +176,53 @@ button:hover{
     background:rgba(255,255,255,0.08);
     text-align:center;
     color:white;
+    animation:fadeIn .5s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
 .sentiment{
-    font-size:26px;
-    font-weight:600;
-    margin-top:10px;
+    font-size:28px;
+    font-weight:700;
+    margin-top:15px;
 }
 
-.footer{
-    text-align:center;
-    margin-top:25px;
-    color:#94a3b8;
-    font-size:13px;
+.positive{
+    color:#22c55e;
+}
+
+.negative{
+    color:#ef4444;
+}
+
+.neutral{
+    color:#facc15;
+}
+
+@media(max-width:768px){
+
+    .container{
+        width:95%;
+        padding:25px;
+    }
+
+    h1{
+        font-size:28px;
+    }
+
+    textarea{
+        height:140px;
+    }
 }
 
 </style>
@@ -157,10 +234,10 @@ button:hover{
 
     <div class="logo">🧠</div>
 
-    <h1>AI Sentiment Analyzer</h1>
+    <h1>Sentiment Analysis Web App</h1>
 
     <p class="subtitle">
-        Analyze emotions and sentiment from text instantly
+        Analyze the emotions and sentiments from text instantly
     </p>
 
     <form method="POST">
@@ -168,12 +245,19 @@ button:hover{
         {% csrf_token %}
 
         <textarea
+            id="textInput"
             name="text"
-            placeholder="Type a review, message, tweet, or any sentence..."></textarea>
+            placeholder="Type a review, message, tweet, or any sentence...">{{ text }}</textarea>
+
+        <div class="counter">
+            <span id="charCount">0</span> characters
+        </div>
 
         <button type="submit">
             Analyze Sentiment
         </button>
+
+        <div class="loader" id="loader"></div>
 
     </form>
 
@@ -182,19 +266,53 @@ button:hover{
 
         <h3>Analysis Result</h3>
 
-        <div class="sentiment">
+        <div class="sentiment
+
+        {% if sentiment == 'Positive' %}
+            positive
+        {% elif sentiment == 'Negative' %}
+            negative
+        {% else %}
+            neutral
+        {% endif %}
+
+        ">
             {{ sentiment }}
+
+            {% if sentiment == "Positive" %}
+                😊
+            {% elif sentiment == "Negative" %}
+                😞
+            {% else %}
+                😐
+            {% endif %}
+
         </div>
 
     </div>
     {% endif %}
 
-    <div class="footer">
-        Powered by Django & NLP
-    </div>
-
 </div>
+
+<script>
+
+const textInput = document.getElementById("textInput");
+const charCount = document.getElementById("charCount");
+
+charCount.textContent = textInput.value.length;
+
+textInput.addEventListener("input", () => {
+    charCount.textContent = textInput.value.length;
+});
+
+const form = document.querySelector("form");
+const loader = document.getElementById("loader");
+
+form.addEventListener("submit", () => {
+    loader.style.display = "block";
+});
+
+</script>
 
 </body>
 </html>
-  
